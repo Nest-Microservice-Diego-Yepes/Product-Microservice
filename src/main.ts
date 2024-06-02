@@ -8,12 +8,15 @@ import { envs } from './config';
 async function bootstrap() {
   const logger = new Logger('main');
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,{
-    transport: Transport.TCP,
-    options:{
-      port: envs.port
-    }
-  });
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.NATS,
+      options: {
+        servers: envs.natsServers,
+      },
+    },
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -23,6 +26,6 @@ async function bootstrap() {
   );
   await app.listen();
 
-  logger.log(`Products Microservice running on port ${envs.port}` );
+  logger.log(`Products Microservice running on port ${envs.port}`);
 }
 bootstrap();
